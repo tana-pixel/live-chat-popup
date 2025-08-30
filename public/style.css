@@ -1,0 +1,125 @@
+/* ปุ่ม chat */
+#chatButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  z-index: 999;
+}
+
+/* กล่อง chat */
+#chatBox {
+  display: none;
+  position: fixed;
+  bottom: 70px;
+  right: 20px;
+  width: 300px;
+  max-height: 400px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  flex-direction: column;
+  overflow: hidden;
+  font-family: sans-serif;
+  z-index: 999;
+}
+
+/* Header */
+#chatHeader {
+  background: #007bff;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* ช่องใส่ชื่อผู้ใช้ */
+#usernameBox {
+  padding: 5px;
+  text-align: center;
+}
+#usernameBox input {
+  width: 90%;
+  padding: 8px;
+  margin: 5px auto;
+  display: block;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: center;
+}
+
+/* พื้นที่ข้อความ */
+#chatMessages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: #f5f5f5;
+}
+
+/* ข้อความแต่ละบับเบิ้ล */
+.message {
+  max-width: 80%;
+  padding: 5px 10px;
+  border-radius: 10px;
+  word-wrap: break-word;
+}
+
+/* ฝั่งตัวเอง */
+.self {
+  align-self: flex-end;
+  background-color: #DCF8C6;
+}
+
+/* ฝั่งคนอื่น */
+.other {
+  align-self: flex-start;
+  background-color: #EAEAEA;
+}
+
+/* ชื่อ + เวลา */
+.msgInfo {
+  font-size: 0.75em;
+  color: #555;
+  margin-bottom: 2px;
+}
+
+/* ข้อความ */
+.msgText {
+  font-size: 0.9em;
+}
+
+/* ช่องพิมพ์ข้อความ */
+#chatInput {
+  display: flex;
+  border-top: 1px solid #ccc;
+}
+#chatInput input[type="text"] {
+  flex: 1;
+  padding: 10px;
+  border: none;
+}
+#chatInput button {
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* Responsive มือถือ */
+@media (max-width: 400px) {
+  #chatBox {
+    width: 90%;
+    bottom: 60px;
+    right: 5%;
+  }
+}

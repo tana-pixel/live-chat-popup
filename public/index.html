@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Live Chat</title>
+<link rel="stylesheet" href="style.css">
+<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+<button id="chatButton">💬 Chat</button>
+
+<div id="chatBox">
+  <div id="chatHeader">Live Chat</div>
+
+  <!-- ช่องใส่ชื่อผู้ใช้ -->
+  <div id="usernameBox">
+    <input type="text" id="username" placeholder="พิมพ์ชื่อของคุณ..." />
+  </div>
+
+  <div id="chatMessages"></div>
+
+  <div id="chatInput">
+    <input type="text" id="message" placeholder="พิมพ์ข้อความ..." />
+    
+    <!-- ปุ่ม emoji -->
+    <button id="emojiBtn">😊</button>
+
+    <!-- ปุ่มแนบไฟล์ -->
+    <input type="file" id="fileInput" style="display:none;" />
+    <button id="fileBtn">📎</button>
+
+    <!-- ปุ่มส่งข้อความ -->
+    <button id="sendBtn">ส่ง</button>
+  </div>
+</div>
+
+<script>
+const socket = io();
+const chatButton = document.getElementById('chatButton');
+const chatBox = document.getElementById('chatBox');
+const chatHeader = document.getElementById('chatHeader');
+const chatMessages = document.getElementById('chatMessages');
+const sendBtn = document.getElementById('sendBtn');
+const messageInput = document.getElementById('message');
+const usernameInput = document.getElementById('username');
+const emojiBtn = document.getElementById('emojiBtn');
+const fileBtn = document.getElementById('fileBtn');
+const fileInput = document.getElementById('fileInput');
+
+let myUsername = "";
+
+// เสียงแจ้งเตือน
+const notificationSound = new Audio('notification.mp3');
+
+// เปิด/ปิด chat
+chatButton.addEventListener('click', () => {
+  chatBox.style.display = chatBox.style.display === 'flex' ? 'none' : 'flex';
+  chatBox.style.flexDirection = 'column';
+});
+
+chatHeader.addEventListener('click', () => {
+  chatBox.style.display = 'none';
+});
+
+// ส่งข้อความ
+function sendMessage() {
+  const msg = messageInput.value.trim();
+  if(!myUsername) {
+    myUsername = usernameInput.value.trim() || "ผู้ใช้ไม่ระบุ";
+  }
+  if(msg){
+    const timestamp = new Date().toLocaleTimeString();
+    socket.emit('chat message', { username: myUsername, msg, timestamp });
+    messageInput.value = '';
+  }
+}
+
+// กดปุ่มส่ง
+sendBtn.addEventListener('click', sendMessage);
+
+// กด Enter เพื่อส่ง
+messageInput.addEventListener('keypress', (e) => {
+  if(e.key === 'Enter') sendMessage();
+});
+
+// emoji แบบง่าย
+emojiBtn.addEventListener('click', () => {
+  const emoji = prompt("พิมพ์ emoji ที่ต้องการ:");
+  if(emoji){
+    messageInput.value += emoji;
+    messageInput.focus();
+  }
+});
+
+// ส่งไฟล์รูป
+fileBtn.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const timestamp = new Date().toLocaleTimeString();
+      socket.emit('chat message', {
+        username: myUsername,
+        msg: `<img src="${e.target.result}" style="max-width:150px; max-height:150px;"/>`,
+        timestamp
+      });
+    }
+    reader.readAsDataURL(file);
+  }
+});
+
+// รับข้อความ
+socket.on('chat message', (data) => {
+  const msgDiv = document.createElement('div');
+  msgDiv.classList.add('message');
+
+  if(data.username === myUsername){
+    msgDiv.classList.add('self');
+  } else {
+    msgDiv.classList.add('other');
+    notificationSound.play(); // เล่นเสียงแจ้งเตือน
+  }
+
+  msgDiv.innerHTML = `
+    <div class="msgInfo"><strong>${data.username}</strong> <span>${data.timestamp}</span></div>
+    <div class="msgText">${data.msg}</div>
+  `;
+  chatMessages.appendChild(msgDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+</script>
+
+</body>
+</html>
